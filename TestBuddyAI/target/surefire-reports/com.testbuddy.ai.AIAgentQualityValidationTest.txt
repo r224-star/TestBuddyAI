@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------------
+Test set: com.testbuddy.ai.AIAgentQualityValidationTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 2.421 s <<< FAILURE! -- in com.testbuddy.ai.AIAgentQualityValidationTest
+com.testbuddy.ai.AIAgentQualityValidationTest.shouldAnalyzeTestCaseQualityWithAI -- Time elapsed: 2.383 s <<< ERROR!
+java.lang.RuntimeException: 
+API call failed: 503 - {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+	at com.testbuddy.ai.AIAgent.askAI(AIAgent.java:48)
+	at com.testbuddy.ai.AITestQualityValidator.validate(AITestQualityValidator.java:43)
+	at com.testbuddy.ai.AIAgentQualityValidationTest.shouldAnalyzeTestCaseQualityWithAI(AIAgentQualityValidationTest.java:29)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

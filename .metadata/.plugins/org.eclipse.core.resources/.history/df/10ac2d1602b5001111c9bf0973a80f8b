@@ -1,0 +1,53 @@
+import com.testbuddy.tests.StructuredTestCase;
+//// Yeh import line add karein:
+//import com.testbuddy.tests.StructuredTestCase;
+// baaki code same rahega...
+```[cite: 10]
+
+Kyunki `StructuredTestCase.java` ab **`com.testbuddy.ai`** ke andar hi maujood hai[cite: 10], is file me kisi bhi `import` ki zaroorat nahi hai (same package me classes direct access ho jati hain).
+
+---
+
+### Step: Is file ka code replace karein
+
+`StructuredTestCaseTest.java` file ke saare text ko select karke (`Ctrl + A`) delete karein aur exact yeh clean code paste kar dein:
+
+```java
+package com.testbuddy.ai;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class StructuredTestCaseTest {
+
+    @Test
+    void shouldCreateStructuredTestCase() {
+
+        StructuredTestCase testCase = new StructuredTestCase(
+                "TC_LOGIN_001",
+                "Successful Login",
+                "POSITIVE",
+                "HIGH",
+                java.util.List.of("Registered user exists"),
+                java.util.List.of(
+                        "Open login page",
+                        "Enter valid username",
+                        "Enter valid password",
+                        "Click Login"
+                ),
+                "User is redirected to dashboard"
+        );
+
+        assertEquals("TC_LOGIN_001", testCase.getId());
+        assertEquals("Successful Login", testCase.getTitle());
+        assertEquals("POSITIVE", testCase.getType());
+        assertEquals("HIGH", testCase.getPriority());
+
+        assertFalse(testCase.getPreconditions().isEmpty());
+        assertEquals(4, testCase.getSteps().size());
+        assertEquals(
+                "User is redirected to dashboard",
+                testCase.getExpectedResult()
+        );
+    }
+}

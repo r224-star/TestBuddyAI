@@ -1,0 +1,40 @@
+package com.testbuddy.ai;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+//import com.testbuddy.tests.StructuredTestCase;
+//// Yeh import line add karein:
+//import com.testbuddy.tests.StructuredTestCase;
+
+class StructuredTestCaseTest {
+    @Test
+    void shouldCreateStructuredTestCase() {
+
+        StructuredTestCase testCase = new StructuredTestCase(
+                "TC_LOGIN_001",
+                "Successful Login",
+                "POSITIVE",
+                "HIGH",
+                java.util.List.of("Registered user exists"),
+                java.util.List.of(
+                        "Open login page",
+                        "Enter valid username",
+                        "Enter valid password",
+                        "Click Login"
+                ),
+                "User is redirected to dashboard"
+        );
+
+        assertEquals("TC_LOGIN_001", testCase.getId());
+        assertEquals("Successful Login", testCase.getTitle());
+        assertEquals("POSITIVE", testCase.getType());
+        assertEquals("HIGH", testCase.getPriority());
+
+        assertFalse(testCase.getPreconditions().isEmpty());
+        assertEquals(4, testCase.getSteps().size());
+        assertEquals(
+                "User is redirected to dashboard",
+                testCase.getExpectedResult()
+        );
+    }
+}

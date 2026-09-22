@@ -1,0 +1,58 @@
+package com.testbuddy.automation;
+
+import com.testbuddy.utils.DBConnection;
+import com.testbuddy.utils.TestResult;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+public class TestResultDAO {
+
+	public void saveTestCase(TestCase tc) throws Exception {
+
+	    String checkSql = "SELECT COUNT(*) FROM test_cases WHERE id = ?";
+	    String updateSql = "UPDATE test_cases SET title = ?, steps = ?, expected_result = ? WHERE id = ?";
+	    String insertSql = "INSERT INTO test_cases (id, title, steps, expected_result) VALUES (?, ?, ?, ?)";
+
+	    try (Connection conn = DBConnection.getConnection()) {
+
+	        boolean exists = false;
+
+	        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+
+	            checkStmt.setString(1, tc.getId());
+
+	            try (ResultSet rs = checkStmt.executeQuery()) {
+	                if (rs.next()) {
+	                    exists = rs.getInt(1) > 0;
+	                }
+	            }
+	        }
+
+	        if (exists) {
+
+	            try (PreparedStatement stmt = conn.prepareStatement(updateSql)) {
+
+	                stmt.setString(1, tc.getTitle());
+	                stmt.setString(2, tc.getSteps());
+	                stmt.setString(3, tc.getExpectedResult());
+	                stmt.setString(4, tc.getId());
+
+	                stmt.executeUpdate();
+	            }
+
+	        } else {
+
+	            try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
+
+	                stmt.setString(1, tc.getId());
+	                stmt.setString(2, tc.getTitle());
+	                stmt.setString(3, tc.getSteps());
+	                stmt.setString(4, tc.getExpectedResult());
+
+	                stmt.executeUpdate();
+	            }
+	        }
+	    }
+	}
+}

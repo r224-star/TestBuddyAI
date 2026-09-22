@@ -1,0 +1,21 @@
+-------------------------------------------------------------------------------
+Test set: com.testbuddy.ai.AIAgentStructuredTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.001 s <<< FAILURE! -- in com.testbuddy.ai.AIAgentStructuredTest
+com.testbuddy.ai.AIAgentStructuredTest.shouldGenerateStructuredTestCasesFromRequirement -- Time elapsed: 0.999 s <<< ERROR!
+java.lang.RuntimeException: 
+API call failed: 503 - {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+	at com.testbuddy.ai.AIAgent.askAI(AIAgent.java:48)
+	at com.testbuddy.ai.AIAgent.generateStructuredTestCases(AIAgent.java:113)
+	at com.testbuddy.ai.AIAgentStructuredTest.shouldGenerateStructuredTestCasesFromRequirement(AIAgentStructuredTest.java:17)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
