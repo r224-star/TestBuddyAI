@@ -131,4 +131,42 @@ public class TestController {
                     );
         }
     }
+    @PostMapping("/execute-healing-test")
+    public org.springframework.http.ResponseEntity<java.util.Map<String, Object>> runSelfHealingTest(
+            @RequestBody(required = false) java.util.Map<String, String> payload) {
+
+        String targetUrl = (payload != null && payload.containsKey("url")) 
+                ? payload.get("url") : "https://www.saucedemo.com";
+        String fallbackHint = (payload != null && payload.containsKey("hint")) 
+                ? payload.get("hint") : "login-button";
+
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+
+        io.github.bonigarcia.wdm.WebDriverManager.chromedriver().setup();
+        org.openqa.selenium.chrome.ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
+        options.addArguments("--headless=new", "--disable-gpu", "--no-sandbox");
+
+        org.openqa.selenium.WebDriver baseDriver = new org.openqa.selenium.chrome.ChromeDriver(options);
+        com.testbuddy.automation.SelfHealingDriver healingDriver = new com.testbuddy.automation.SelfHealingDriver(baseDriver);
+
+        try {
+            healingDriver.getDriver().get(targetUrl);
+
+            // Intentionally testing a broken locator to verify self-healing recovery
+            org.openqa.selenium.By brokenLocator = org.openqa.selenium.By.id("broken_login_button_id");
+            org.openqa.selenium.WebElement recoveredElement = healingDriver.findElementWithHealing(brokenLocator, fallbackHint);
+
+            response.put("status", "SUCCESS");
+            response.put("healed", true);
+            response.put("recoveredTag", recoveredElement.getTagName());
+            response.put("message", "Broken locator was autonomously healed and recovered!");
+        } catch (Exception ex) {
+            response.put("status", "FAILED");
+            response.put("error", ex.getMessage());
+        } finally {
+            baseDriver.quit();
+        }
+
+        return org.springframework.http.ResponseEntity.ok(response);
+    }
 }
