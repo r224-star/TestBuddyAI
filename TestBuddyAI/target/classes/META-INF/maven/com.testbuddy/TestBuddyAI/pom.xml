@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -8,18 +7,16 @@
     <!-- ========================================================= -->
     <!-- Spring Boot Parent -->
     <!-- ========================================================= -->
-
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.4</version>
-    <relativePath/>
-</parent>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/>
+    </parent>
 
     <!-- ========================================================= -->
     <!-- Project Information -->
     <!-- ========================================================= -->
-
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.testbuddy</groupId>
@@ -29,141 +26,115 @@
     <name>TestBuddyAI</name>
     <description>Autonomous Software Testing Agent</description>
 
-
     <!-- ========================================================= -->
-    <!-- Java Configuration -->
+    <!-- Java & Encoding Configuration -->
     <!-- ========================================================= -->
-
     <properties>
         <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
 
     <!-- ========================================================= -->
     <!-- Dependencies -->
     <!-- ========================================================= -->
-
     <dependencies>
 
-
-        <!-- ===================================================== -->
         <!-- Spring Boot REST API -->
-        <!-- ===================================================== -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Selenium -->
-        <!-- Version managed by Spring Boot -->
-        <!-- ===================================================== -->
-
+        <!-- Selenium Automation -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- TestNG -->
-        <!-- ===================================================== -->
-
+        <!-- TestNG Framework -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>7.10.2</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- WebDriverManager -->
-        <!-- ===================================================== -->
-
+        <!-- WebDriverManager for Automated Drivers -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>5.9.2</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Gson -->
-        <!-- Version managed by Spring Boot -->
-        <!-- ===================================================== -->
-
+        <!-- JSON Parser -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- MySQL -->
-        <!-- Version managed by Spring Boot -->
-        <!-- ===================================================== -->
-
+        <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Extent Reports -->
-        <!-- ===================================================== -->
-
+        <!-- Extent Reports for Visual Dashboard -->
         <dependency>
             <groupId>com.aventstack</groupId>
             <artifactId>extentreports</artifactId>
             <version>5.1.2</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Spring Boot Testing -->
-        <!-- ===================================================== -->
-
+        <!-- Spring Boot Test Support -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-
     </dependencies>
 
-
     <!-- ========================================================= -->
-    <!-- Build -->
+    <!-- Build & Plugin Configuration -->
     <!-- ========================================================= -->
-
     <build>
+        <sourceDirectory>java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
         <plugins>
 
+            <!-- Spring Boot Executable Packaging -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <configuration>
-        <testFailureIgnore>true</testFailureIgnore>
-        <excludes>
-            <exclude>**/AIAgentQualityValidationTest.java</exclude>
-            <exclude>**/AIAgentStructuredTest.java</exclude>
-        </excludes>
-    </configuration>
-</plugin>
-        </plugins>
 
+            <!-- Java Compiler (Version auto-managed by Spring Boot parent) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+            </plugin>
+
+            <!-- Surefire Test Execution & Exclusions (Version auto-managed) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <excludes>
+                        <exclude>**/AIAgentQualityValidationTest.java</exclude>
+                        <exclude>**/AIAgentStructuredTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+        </plugins>
     </build>
 
-
-</project> 
+</project>

@@ -1,16 +1,18 @@
-# React + Vite
+# ⚡ TestBuddyAI - Autonomous Software Testing Agent
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+An intelligent QA automation framework featuring runtime locator self-healing, automated execution pipelines, and interactive HTML dashboards.
 
-Currently, two official plugins are available:
+🔗 **Live Frontend:** [https://testbuddyai.vercel.app](https://testbuddyai.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Key Features
 
-## React Compiler
+- **Runtime Self-Healing:** Recovers broken locators dynamically via heuristic DOM scanning.
+- **Visual HTML ExtentReports:** Generates rich, dark-themed execution reports.
+- **RESTful API:** Spring Boot 3.3.4 microservice running on port 8081.
+- **Modern Dashboard:** React 18 + Vite live on Vercel.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 💻 Setup & Run
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Backend:** Run `TestBuddyApplication.java` (Port 8081)
+- **Frontend:** `cd testbuddy-web && npm install && npm run dev`
+- **Reports:** Open `http://localhost:8081/reports/SelfHealingTestReport.html`
