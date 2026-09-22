@@ -262,12 +262,12 @@ function App() {
                   </div>
                 </div>
 
-                {/* Self-Healing Success Tag */}
+                {/* Self-Healing Success Tag & Visual Report Link */}
                 {result.healed && (
                   <div
                     style={{
                       marginTop: "12px",
-                      padding: "10px",
+                      padding: "12px",
                       borderRadius: "8px",
                       background: "rgba(16, 185, 129, 0.15)",
                       border: "1px solid #10b981",
@@ -275,9 +275,31 @@ function App() {
                       fontSize: "13px",
                     }}
                   >
-                    ⚡ <strong>Autonomous Recovery Active:</strong> Broken
-                    locator healed. Recovered Element:{" "}
-                    <code>&lt;{result.recoveredTag || "element"}&gt;</code>
+                    <div>
+                      ⚡ <strong>Autonomous Recovery Active:</strong> Broken
+                      locator healed. Recovered Element:{" "}
+                      <code>&lt;{result.recoveredTag || "element"}&gt;</code>
+                    </div>
+
+                    <div style={{ marginTop: "10px" }}>
+                      <a
+                        href="http://localhost:8081/reports/SelfHealingTestReport.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-block",
+                          padding: "8px 14px",
+                          backgroundColor: "#10b981",
+                          color: "#0f172a",
+                          fontWeight: "700",
+                          borderRadius: "6px",
+                          textDecoration: "none",
+                          fontSize: "12px",
+                        }}
+                      >
+                        📊 View Visual HTML ExtentReport ↗
+                      </a>
+                    </div>
                   </div>
                 )}
 
