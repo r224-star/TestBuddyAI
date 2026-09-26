@@ -1,9 +1,18 @@
 import { useState } from "react";
 import "./App.css";
 
+// Live Render Cloud Backend URL
+const API_BASE_URL = "https://testbuddyai-vmw8.onrender.com";
+
 function App() {
   const [requirement, setRequirement] = useState("");
   const [testClass, setTestClass] = useState("com.testbuddy.tests.LoginTest");
+
+  // Dynamic Autonomous Healing Inputs
+  const [targetUrl, setTargetUrl] = useState("https://www.saucedemo.com");
+  const [brokenLocator, setBrokenLocator] = useState("invalid_login_btn_id");
+  const [hint, setHint] = useState("login-button");
+
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +38,7 @@ function App() {
     setResult(null);
 
     try {
-      const response = await fetch("http://localhost:8081/api/tests/run", {
+      const response = await fetch(`${API_BASE_URL}/api/tests/run`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,29 +74,38 @@ function App() {
       setResult({
         status: "ERROR",
         message:
-          "Unable to connect to TestBuddyAI backend. Make sure Spring Boot is running on port 8081.",
+          "Unable to connect to TestBuddyAI backend. Render instance might be waking up (takes ~30-50 seconds on free tier).",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  // Autonomous Self-Healing Test Execution
+  // Autonomous Self-Healing Test Execution with Dynamic Inputs & Screenshot Capture
   const runSelfHealingTest = async () => {
+    if (!targetUrl.trim()) {
+      setResult({
+        status: "ERROR",
+        message: "Please enter a valid target URL.",
+      });
+      return;
+    }
+
     setLoading(true);
     setResult(null);
 
     try {
       const response = await fetch(
-        "http://localhost:8081/api/tests/execute-healing-test",
+        `${API_BASE_URL}/api/tests/execute-healing-test`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            url: "https://www.saucedemo.com",
-            hint: "login-button",
+            url: targetUrl.trim(),
+            brokenLocator: brokenLocator.trim(),
+            hint: hint.trim(),
           }),
         }
       );
@@ -102,13 +120,15 @@ function App() {
         message: data.message,
         healed: data.healed,
         recoveredTag: data.recoveredTag,
+        screenshot: data.screenshot,
+        targetUrl: data.targetUrl || targetUrl,
       });
     } catch (error) {
       console.error("Self-Healing API Error:", error);
       setResult({
         status: "ERROR",
         message:
-          "Unable to execute Self-Healing Test. Ensure backend is running on port 8081.",
+          "Unable to execute Self-Healing Test. Ensure cloud backend is active.",
       });
     } finally {
       setLoading(false);
@@ -129,7 +149,7 @@ function App() {
 
         <div className="server-status">
           <span className="status-dot"></span>
-          Backend Online (Port 8081)
+          Backend Cloud Live (Render)
         </div>
       </header>
 
@@ -146,7 +166,7 @@ function App() {
           <p>
             Describe what you want to test and TestBuddyAI will analyze the
             requirement, generate test cases, execute automation, and
-            autonomously heal broken locators.
+            autonomously heal broken locators with visual proof.
           </p>
         </section>
 
@@ -157,7 +177,7 @@ function App() {
             <div className="card-header">
               <div>
                 <h3>Start a Test Run</h3>
-                <p>Describe your application testing requirement.</p>
+                <p>Configure dynamic testing requirements or healing targets.</p>
               </div>
               <div className="step-number">01</div>
             </div>
@@ -169,12 +189,14 @@ function App() {
               value={requirement}
               onChange={(e) => setRequirement(e.target.value)}
               placeholder="Example: Test the login functionality with valid and invalid credentials"
-              rows={6}
+              rows={4}
               disabled={loading}
             />
 
             {/* Test Class */}
-            <label htmlFor="testClass">Test Class</label>
+            <label htmlFor="testClass" style={{ marginTop: "10px" }}>
+              Standard Test Class
+            </label>
             <input
               id="testClass"
               type="text"
@@ -183,8 +205,59 @@ function App() {
               disabled={loading}
             />
 
+            {/* Dynamic Self-Healing Options */}
+            <div
+              style={{
+                marginTop: "16px",
+                padding: "12px",
+                background: "rgba(255, 255, 255, 0.04)",
+                borderRadius: "8px",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              <h4 style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#10b981" }}>
+                ⚡ Autonomous Self-Healing Parameters
+              </h4>
+
+              <label htmlFor="targetUrl" style={{ fontSize: "12px" }}>
+                Target Webpage URL
+              </label>
+              <input
+                id="targetUrl"
+                type="text"
+                value={targetUrl}
+                onChange={(e) => setTargetUrl(e.target.value)}
+                placeholder="https://www.saucedemo.com"
+                disabled={loading}
+              />
+
+              <label htmlFor="brokenLocator" style={{ fontSize: "12px", marginTop: "8px" }}>
+                Simulated Broken Selector (ID)
+              </label>
+              <input
+                id="brokenLocator"
+                type="text"
+                value={brokenLocator}
+                onChange={(e) => setBrokenLocator(e.target.value)}
+                placeholder="invalid_login_btn_id"
+                disabled={loading}
+              />
+
+              <label htmlFor="hint" style={{ fontSize: "12px", marginTop: "8px" }}>
+                AI Recovery Semantic Hint
+              </label>
+              <input
+                id="hint"
+                type="text"
+                value={hint}
+                onChange={(e) => setHint(e.target.value)}
+                placeholder="login-button"
+                disabled={loading}
+              />
+            </div>
+
             {/* Action Buttons */}
-            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+            <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
               <button
                 className="run-button"
                 onClick={runTests}
@@ -200,10 +273,11 @@ function App() {
                 disabled={loading}
                 style={{
                   flex: 1,
-                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  background:
+                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                 }}
               >
-                {loading ? "Healing & Running..." : "Run Self-Healing Test ⚡"}
+                {loading ? "Healing & Inspecting DOM..." : "Run Self-Healing Test ⚡"}
               </button>
             </div>
           </div>
@@ -262,7 +336,7 @@ function App() {
                   </div>
                 </div>
 
-                {/* Self-Healing Success Tag & Visual Report Link */}
+                {/* Self-Healing Success Tag, Visual Screenshot & ExtentReport Link */}
                 {result.healed && (
                   <div
                     style={{
@@ -281,9 +355,37 @@ function App() {
                       <code>&lt;{result.recoveredTag || "element"}&gt;</code>
                     </div>
 
-                    <div style={{ marginTop: "10px" }}>
+                    {/* Live Highlighted Element Screenshot */}
+                    {result.screenshot && (
+                      <div style={{ marginTop: "14px" }}>
+                        <p
+                          style={{
+                            fontWeight: "700",
+                            marginBottom: "8px",
+                            color: "#10b981",
+                            fontSize: "12px",
+                          }}
+                        >
+                          📸 Live Visual Proof (Healed Element Highlighted in Green):
+                        </p>
+                        <img
+                          src={`data:image/png;base64,${result.screenshot}`}
+                          alt="Healed Element Visual Proof"
+                          style={{
+                            width: "100%",
+                            maxHeight: "260px",
+                            objectFit: "contain",
+                            borderRadius: "6px",
+                            border: "1px solid rgba(16, 185, 129, 0.4)",
+                            backgroundColor: "#000",
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    <div style={{ marginTop: "12px" }}>
                       <a
-                        href="http://localhost:8081/reports/SelfHealingTestReport.html"
+                        href={`${API_BASE_URL}/reports/SelfHealingTestReport.html`}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -358,8 +460,8 @@ function App() {
 
           <div>
             <span>04</span>
-            <h3>Reporting</h3>
-            <p>Analyze results and generate defect reports.</p>
+            <h3>Reporting & Visuals</h3>
+            <p>Analyze results, capture live element snapshots, and generate defect reports.</p>
           </div>
         </section>
       </main>
