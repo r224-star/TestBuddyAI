@@ -1,75 +1,94 @@
 package com.testbuddy.automation;
 
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
-
 public class SelfHealingDriver {
 
-    private final WebDriver driver;
+    private WebDriver driver;
+    private String healedScreenshotBase64;
 
     public SelfHealingDriver(WebDriver driver) {
         this.driver = driver;
+        this.healedScreenshotBase64 = null;
+    }
+
+    public void get(String url) {
+        if (driver != null) {
+            driver.get(url);
+        }
+    }
+
+    public void quit() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
+    public WebDriver getWrappedDriver() {
+        return driver;
+    }
+
+    public String getHealedScreenshotBase64() {
+        return healedScreenshotBase64;
     }
 
     /**
-     * Tries default locator; if missing, triggers self-healing resolution.
+     * Primary locator try karta hai, fail hone par DOM heuristic scan chalata hai,
+     * target element ko green highlight karta hai, aur Base64 visual snapshot capture karta hai.
      */
-    public WebElement findElementWithHealing(By originalBy, String tagOrTextHint) {
+    public WebElement findElementWithHealing(By originalLocator, String hint) {
         try {
-            return driver.findElement(originalBy);
-        } catch (NoSuchElementException e) {
-            System.out.println("[SELF-HEAL WARNING] Original locator failed: " + originalBy);
-            System.out.println("[SELF-HEAL ACTION] Initiating autonomous DOM scan for: " + tagOrTextHint);
+            return driver.findElement(originalLocator);
+        } catch (Exception e) {
+            System.out.println("[HEALING] Primary locator failed: " + originalLocator);
+            System.out.println("[HEALING] Scanning DOM with semantic hint: " + hint);
 
-            WebElement healedElement = healElement(tagOrTextHint);
-            if (healedElement != null) {
-                highlightElement(healedElement);
-                System.out.println("[SELF-HEAL SUCCESS] Healed element located dynamically.");
-                return healedElement;
+            List<WebElement> candidates = driver.findElements(By.xpath("//*[@id or @name or @class or @data-test or @value]"));
+
+            for (WebElement element : candidates) {
+                try {
+                    String id = element.getAttribute("id");
+                    String name = element.getAttribute("name");
+                    String dataTest = element.getAttribute("data-test");
+                    String value = element.getAttribute("value");
+                    String text = element.getText();
+
+                    if ((id != null && id.toLowerCase().contains(hint.toLowerCase())) ||
+                        (name != null && name.toLowerCase().contains(hint.toLowerCase())) ||
+                        (dataTest != null && dataTest.toLowerCase().contains(hint.toLowerCase())) ||
+                        (value != null && value.toLowerCase().contains(hint.toLowerCase())) ||
+                        (text != null && text.toLowerCase().contains(hint.toLowerCase()))) {
+
+                        System.out.println("[HEALING] Match confirmed. Highlighting and taking snapshot.");
+
+                        // Visual Green Highlight Draw
+                        try {
+                            if (driver instanceof JavascriptExecutor) {
+                                JavascriptExecutor js = (JavascriptExecutor) driver;
+                                js.executeScript("arguments[0].style.border='4px solid #10b981'; arguments[0].style.boxShadow='0 0 12px #10b981';", element);
+                                Thread.sleep(400);
+                            }
+
+                            // Capture Base64 Snapshot
+                            if (driver instanceof TakesScreenshot) {
+                                this.healedScreenshotBase64 = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BASE64);
+                            }
+                        } catch (Exception ignored) {
+                        }
+
+                        return element;
+                    }
+                } catch (Exception ignored) {
+                }
             }
-            throw e; // Element genuinely not on page
+
+            throw new RuntimeException("Heuristic recovery failed to locate element matching hint: " + hint);
         }
-    }
-
-    private WebElement healElement(String textHint) {
-        // Strategy 1: Fuzzy text search via XPath
-        List<WebElement> candidates = driver.findElements(
-            By.xpath("//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" 
-                     + textHint.toLowerCase() + "')]")
-        );
-        for (WebElement el : candidates) {
-            if (el.isDisplayed() && el.isEnabled()) {
-                return el;
-            }
-        }
-
-        // Strategy 2: Search by input placeholders or attributes
-        List<WebElement> attributeCandidates = driver.findElements(
-            By.xpath("//*[@name='" + textHint + "' or @placeholder='" + textHint + "' or @aria-label='" + textHint + "']")
-        );
-        for (WebElement el : attributeCandidates) {
-            if (el.isDisplayed()) {
-                return el;
-            }
-        }
-
-        return null;
-    }
-
-    private void highlightElement(WebElement element) {
-        try {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].setAttribute('style', 'border: 3px solid #10b981; background: #d1fae5;');", element);
-        } catch (Exception ignored) {
-        }
-    }
-
-    public WebDriver getDriver() {
-        return driver;
     }
 }
