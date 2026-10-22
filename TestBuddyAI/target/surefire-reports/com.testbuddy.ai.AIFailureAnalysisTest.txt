@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.testbuddy.ai.AIFailureAnalysisTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 2.019 s <<< FAILURE! -- in com.testbuddy.ai.AIFailureAnalysisTest
-com.testbuddy.ai.AIFailureAnalysisTest.shouldAnalyzeFailureWithAI -- Time elapsed: 2.007 s <<< ERROR!
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 2.945 s <<< FAILURE! -- in com.testbuddy.ai.AIFailureAnalysisTest
+com.testbuddy.ai.AIFailureAnalysisTest.shouldAnalyzeFailureWithAI -- Time elapsed: 2.935 s <<< ERROR!
 java.lang.RuntimeException: 
 API call failed: 503 - {
   "error": {

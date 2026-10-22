@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.testbuddy.ai.RequirementPlannerTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.055 s <<< FAILURE! -- in com.testbuddy.ai.RequirementPlannerTest
-com.testbuddy.ai.RequirementPlannerTest.shouldCreateStructuredPlanFromRequirement -- Time elapsed: 1.050 s <<< ERROR!
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.537 s <<< FAILURE! -- in com.testbuddy.ai.RequirementPlannerTest
+com.testbuddy.ai.RequirementPlannerTest.shouldCreateStructuredPlanFromRequirement -- Time elapsed: 1.533 s <<< ERROR!
 java.lang.RuntimeException: 
 API call failed: 503 - {
   "error": {
