@@ -1,6 +1,7 @@
 package com.testbuddy.api.controller;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -158,6 +162,49 @@ public class TestController {
                 } catch (Exception ignored) {
                 }
             }
+        }
+    }
+
+    // ExtentReport serve karne ka direct handler (dono paths cover karta hai)
+    @GetMapping(value = {"/reports/SelfHealingTestReport.html", "/reports/SelfHealingTestReport"}, produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<byte[]> getExtentReport() {
+        return fetchReportBytes();
+    }
+    
+    // Global path fallback handler
+    @GetMapping(value = "/api/tests/reports/SelfHealingTestReport.html", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<byte[]> getExtentReportAlt() {
+        return fetchReportBytes();
+    }
+
+    private ResponseEntity<byte[]> fetchReportBytes() {
+        try {
+            String[] possiblePaths = {
+                "reports/SelfHealingTestReport.html",
+                "reports" + File.separator + "SelfHealingTestReport.html",
+                "TestBuddyAI/reports/SelfHealingTestReport.html",
+                "target/classes/static/reports/SelfHealingTestReport.html"
+            };
+
+            for (String p : possiblePaths) {
+                File f = new File(p);
+                if (f.exists() && f.isFile()) {
+                    byte[] content = Files.readAllBytes(f.toPath());
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.TEXT_HTML);
+                    return new ResponseEntity<>(content, headers, HttpStatus.OK);
+                }
+            }
+
+            String notFoundHtml = "<html><body style='font-family:sans-serif;text-align:center;padding:50px;background:#0f172a;color:#f8fafc;'>"
+                    + "<h2>📊 Report File Not Ready Yet</h2>"
+                    + "<p>Please click 'Run Self-Healing Test' from your dashboard first to generate the latest report file.</p>"
+                    + "</body></html>";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundHtml.getBytes());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("<h3>Error loading report: " + e.getMessage() + "</h3>").getBytes());
         }
     }
 }
